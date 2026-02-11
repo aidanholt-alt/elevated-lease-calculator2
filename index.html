@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Elevated RE">
+    <title>Elevated Real Estate | Commercial Lease Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3730a3 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(30, 58, 138, 0.4);
+        }
+
+        h1 {
+            color: #1e3a8a;
+            font-size: 20px;
+            margin-bottom: 5px;
+            text-align: center;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .subtitle {
+            color: #60a5fa;
+            font-size: 13px;
+            text-align: center;
+            margin-bottom: 25px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #555;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #1e3a8a;
+        }
+
+        .toggle-group {
+            position: relative;
+            display: flex;
+            background: #f0f0f0;
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 20px;
+        }
+
+        .toggle-group::before {
+            content: '';
+            position: absolute;
+            width: calc(50% - 4px);
+            height: calc(100% - 8px);
+            background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
+            border-radius: 10px;
+            left: 4px;
+            top: 4px;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(30, 58, 138, 0.5);
+        }
+
+        .toggle-group.annual::before {
+            transform: translateX(calc(100% + 4px));
+        }
+
+        .toggle-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            color: #666;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .toggle-btn.active {
+            color: white;
+            transform: scale(1.02);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding: 14px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .result-box {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .result-label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .result-value {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .result-breakdown {
+            font-size: 13px;
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+
+        .divider {
+            height: 1px;
+            background: rgba(255,255,255,0.3);
+            margin: 12px 0;
+        }
+
+        .section-divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #e0e0e0, transparent);
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .section-divider::after {
+            content: 'OR';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 0 15px;
+            color: #999;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+
+        .section-header:hover {
+            background: #e9ecef;
+        }
+
+        .section-header h2 {
+            color: #1e3a8a;
+            font-size: 18px;
+            margin: 0;
+        }
+
+        .section-header .arrow {
+            font-size: 20px;
+            color: #1e3a8a;
+            transition: transform 0.3s;
+        }
+
+        .section-header .arrow.open {
+            transform: rotate(180deg);
+        }
+
+        .affordability-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .affordability-content.open {
+            max-height: 800px;
+        }
+
+        .reverse-result {
+            background: linear-gradient(135deg, #1e40af 0%, #60a5fa 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ELEVATED REAL ESTATE</h1>
+        <div class="subtitle">Commercial Lease Calculator</div>
+        
+        <div class="input-group">
+            <label for="sqft">Net Leasable Square Footage</label>
+            <input type="number" id="sqft" placeholder="e.g., 2500" step="0.01">
+        </div>
+
+        <div class="input-group">
+            <label for="rate">Base Rent ($ per sq ft)</label>
+            <input type="number" id="rate" placeholder="e.g., 18.00" step="0.01">
+        </div>
+
+        <div class="input-group">
+            <label for="tmi">TMI ($ per sq ft)</label>
+            <input type="number" id="tmi" placeholder="e.g., 12.50" step="0.01">
+        </div>
+
+        <div class="toggle-group">
+            <button class="toggle-btn active" id="monthlyBtn">Monthly</button>
+            <button class="toggle-btn" id="annualBtn">Annual</button>
+        </div>
+
+        <div class="checkbox-group">
+            <input type="checkbox" id="hstCheck">
+            <label for="hstCheck">Include HST (13%)</label>
+        </div>
+
+        <div class="result-box">
+            <div class="result-label" id="resultLabel">Total Monthly Cost</div>
+            <div class="result-value" id="resultValue">$0.00</div>
+            <div class="divider"></div>
+            <div class="result-breakdown" id="breakdown">
+                Enter values to calculate
+            </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <div class="section-header" id="affordabilityToggle">
+            <h2>Affordability Calculator</h2>
+            <span class="arrow">▼</span>
+        </div>
+
+        <div class="affordability-content" id="affordabilityContent">
+            <div class="input-group">
+                <label for="budget">Monthly Budget</label>
+                <input type="number" id="budget" placeholder="e.g., 5000" step="0.01">
+            </div>
+
+            <div class="input-group">
+                <label for="desiredSqft">Desired Square Footage</label>
+                <input type="number" id="desiredSqft" placeholder="e.g., 2500" step="0.01">
+            </div>
+
+            <div class="input-group">
+                <label for="affordTmi">TMI ($ per sq ft)</label>
+                <input type="number" id="affordTmi" placeholder="e.g., 12.50" step="0.01">
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="affordHstCheck">
+                <label for="affordHstCheck">Budget includes HST (13%)</label>
+            </div>
+
+            <div class="result-box reverse-result">
+                <div class="result-label">Maximum Affordable Rate</div>
+                <div class="result-value" id="affordResult">$0.00/sq ft</div>
+                <div class="divider"></div>
+                <div class="result-breakdown" id="affordBreakdown">
+                    Enter your budget to calculate
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const sqftInput = document.getElementById('sqft');
+        const rateInput = document.getElementById('rate');
+        const tmiInput = document.getElementById('tmi');
+        const monthlyBtn = document.getElementById('monthlyBtn');
+        const annualBtn = document.getElementById('annualBtn');
+        const hstCheck = document.getElementById('hstCheck');
+        const resultLabel = document.getElementById('resultLabel');
+        const resultValue = document.getElementById('resultValue');
+        const breakdown = document.getElementById('breakdown');
+        const toggleGroup = document.querySelector('.toggle-group');
+
+        // Affordability calculator elements
+        const affordabilityToggle = document.getElementById('affordabilityToggle');
+        const affordabilityContent = document.getElementById('affordabilityContent');
+        const budgetInput = document.getElementById('budget');
+        const desiredSqftInput = document.getElementById('desiredSqft');
+        const affordTmiInput = document.getElementById('affordTmi');
+        const affordHstCheck = document.getElementById('affordHstCheck');
+        const affordResult = document.getElementById('affordResult');
+        const affordBreakdown = document.getElementById('affordBreakdown');
+
+        let isMonthly = true;
+
+        function calculate() {
+            const sqft = parseFloat(sqftInput.value) || 0;
+            const rate = parseFloat(rateInput.value) || 0;
+            const tmi = parseFloat(tmiInput.value) || 0;
+            const includeHST = hstCheck.checked;
+
+            if (sqft === 0 || rate === 0) {
+                resultValue.textContent = '$0.00';
+                breakdown.innerHTML = 'Enter values to calculate';
+                return;
+            }
+
+            // Calculate annual values
+            const annualBaseRent = sqft * rate;
+            const annualTMI = sqft * tmi;
+            const annualTotal = annualBaseRent + annualTMI;
+
+            // Calculate monthly values
+            const monthlyBaseRent = annualBaseRent / 12;
+            const monthlyTMI = annualTMI / 12;
+            const monthlyTotal = annualTotal / 12;
+
+            // Apply values based on view
+            let baseRent, tmiCost, total;
+            if (isMonthly) {
+                baseRent = monthlyBaseRent;
+                tmiCost = monthlyTMI;
+                total = monthlyTotal;
+                resultLabel.textContent = 'Total Monthly Cost';
+            } else {
+                baseRent = annualBaseRent;
+                tmiCost = annualTMI;
+                total = annualTotal;
+                resultLabel.textContent = 'Total Annual Cost';
+            }
+
+            // Apply HST if checked
+            let hstAmount = 0;
+            let finalTotal = total;
+            if (includeHST) {
+                hstAmount = total * 0.13;
+                finalTotal = total + hstAmount;
+            }
+
+            // Display result
+            resultValue.textContent = formatCurrency(finalTotal);
+
+            // Build breakdown
+            let breakdownHTML = `
+                Base Rent: ${formatCurrency(baseRent)}<br>
+                TMI: ${formatCurrency(tmiCost)}<br>
+                Subtotal: ${formatCurrency(total)}
+            `;
+
+            if (includeHST) {
+                breakdownHTML += `<br>HST (13%): ${formatCurrency(hstAmount)}`;
+            }
+
+            breakdown.innerHTML = breakdownHTML;
+        }
+
+        function formatCurrency(amount) {
+            return '$' + amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        monthlyBtn.addEventListener('click', () => {
+            isMonthly = true;
+            monthlyBtn.classList.add('active');
+            annualBtn.classList.remove('active');
+            toggleGroup.classList.remove('annual');
+            calculate();
+        });
+
+        annualBtn.addEventListener('click', () => {
+            isMonthly = false;
+            annualBtn.classList.add('active');
+            monthlyBtn.classList.remove('active');
+            toggleGroup.classList.add('annual');
+            calculate();
+        });
+
+        sqftInput.addEventListener('input', calculate);
+        rateInput.addEventListener('input', calculate);
+        tmiInput.addEventListener('input', calculate);
+        hstCheck.addEventListener('change', calculate);
+
+        // Affordability calculator toggle
+        affordabilityToggle.addEventListener('click', () => {
+            const arrow = affordabilityToggle.querySelector('.arrow');
+            affordabilityContent.classList.toggle('open');
+            arrow.classList.toggle('open');
+        });
+
+        // Affordability calculator function
+        function calculateAffordability() {
+            const budget = parseFloat(budgetInput.value) || 0;
+            const desiredSqft = parseFloat(desiredSqftInput.value) || 0;
+            const tmi = parseFloat(affordTmiInput.value) || 0;
+            const includesHST = affordHstCheck.checked;
+
+            if (budget === 0 || desiredSqft === 0) {
+                affordResult.textContent = '$0.00/sq ft';
+                affordBreakdown.innerHTML = 'Enter your budget to calculate';
+                return;
+            }
+
+            // Work backwards from monthly budget
+            let monthlyBudget = budget;
+            
+            // If budget includes HST, remove it first
+            if (includesHST) {
+                monthlyBudget = budget / 1.13;
+            }
+
+            // Calculate annual budget
+            const annualBudget = monthlyBudget * 12;
+
+            // Subtract TMI cost
+            const annualTMICost = desiredSqft * tmi;
+            const remainingForRent = annualBudget - annualTMICost;
+
+            // Calculate max affordable rate per sq ft
+            const maxRate = remainingForRent / desiredSqft;
+
+            // Display result
+            affordResult.textContent = formatCurrency(maxRate) + '/sq ft';
+
+            // Build breakdown
+            let breakdownHTML = `
+                Monthly Budget: ${formatCurrency(monthlyBudget)}<br>
+                Annual Budget: ${formatCurrency(annualBudget)}<br>
+                Annual TMI Cost: ${formatCurrency(annualTMICost)}<br>
+                Available for Rent: ${formatCurrency(remainingForRent)}
+            `;
+
+            if (includesHST) {
+                breakdownHTML += `<br><br><small>Budget adjusted for HST</small>`;
+            }
+
+            if (maxRate < 0) {
+                affordResult.textContent = 'Not Affordable';
+                affordBreakdown.innerHTML = 'Budget too low for TMI alone.<br>Increase budget or reduce square footage.';
+            } else {
+                affordBreakdown.innerHTML = breakdownHTML;
+            }
+        }
+
+        // Affordability event listeners
+        budgetInput.addEventListener('input', calculateAffordability);
+        desiredSqftInput.addEventListener('input', calculateAffordability);
+        affordTmiInput.addEventListener('input', calculateAffordability);
+        affordHstCheck.addEventListener('change', calculateAffordability);
+
+        // Initial calculation
+        calculate();
+        calculateAffordability();
+    </script>
+</body>
+</html>
